@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "0 2 * * *" # At 02:00 AM
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -96,3 +99,36 @@ jobs:
           immortalwrt/bin/targets/mediatek/filogic/immortalwrt*.bin
           immortalwrt/bin/targets/mediatek/filogic/immortalwrt*.ubi
           immortalwrt/bin/targets/mediatek/filogic/sha256sums
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Only non-mesh builds go into the Release. Mesh builds still get
+      # built and uploaded as normal workflow Artifacts, just not released.
+      - name: Download JIDU6101 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: immortalwrt-jidu6101
+          path: artifacts
+
+      - name: Download JIDU6J01 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: immortalwrt-jidu6j01
+          path: artifacts
+
+      - name: Delete old release and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete immortalwrt-latest --yes --cleanup-tag || true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: immortalwrt-latest
+          name: "ImmortalWrt Build (Latest)"
+          files: artifacts/**/*
+          make_latest: true
+          body: "Automatically built ImmortalWrt firmware for JIDU6101 and JIDU6J01 (non-mesh). This release is replaced by each new build. Mesh builds are available under this run's Artifacts."
