@@ -11,7 +11,7 @@ python3-setuptools rsync swig unzip zlib1g-dev file wget ccache tree
 git clone https://github.com/immortalwrt/immortalwrt.git
 cd immortalwrt
 
-git checkout v25.12.0
+git checkout v25.12.2
 
 git config --global user.email "ci@build.local"
 git config --global user.name "CI Builder"
