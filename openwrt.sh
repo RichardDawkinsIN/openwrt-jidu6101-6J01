@@ -11,7 +11,7 @@ python3-setuptools rsync swig unzip zlib1g-dev file wget ccache tree
 git clone https://github.com/openwrt/openwrt.git
 cd openwrt
 
-git checkout v25.12.5
+git checkout v25.12.6
 
 git config --global user.email "ci@build.local"
 git config --global user.name "CI Builder"
